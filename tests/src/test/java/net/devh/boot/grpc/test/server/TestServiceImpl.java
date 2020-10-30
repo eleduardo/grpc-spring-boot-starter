@@ -41,7 +41,7 @@ import net.devh.boot.grpc.test.proto.TestServiceGrpc.TestServiceImplBase;
 @GrpcService
 public class TestServiceImpl extends TestServiceImplBase {
 
-    public static final int METHOD_COUNT = 6;
+    public static final int METHOD_COUNT = 7;
 
     public TestServiceImpl() {
         log.info("Created TestServiceImpl");
@@ -63,6 +63,11 @@ public class TestServiceImpl extends TestServiceImplBase {
     }
 
     @Override
+    public StreamObserver<Empty> echo(final StreamObserver<Empty> responseObserver) {
+        return responseObserver;
+    }
+
+    @Override
     @Secured("ROLE_CLIENT1")
     public void secure(final Empty request, final StreamObserver<SomeType> responseObserver) {
         final Authentication authentication = assertAuthenticated("secure");
@@ -81,7 +86,7 @@ public class TestServiceImpl extends TestServiceImplBase {
 
         assertSameAuthenticatedGrcContextCancellation("secureDrain-cancellation", authentication);
 
-        return new StreamObserver<SomeType>() {
+        return new StreamObserver<>() {
 
             @Override
             public void onNext(final SomeType input) {
@@ -125,7 +130,7 @@ public class TestServiceImpl extends TestServiceImplBase {
 
         assertSameAuthenticatedGrcContextCancellation("secureBidi-cancellation", authentication);
 
-        return new StreamObserver<SomeType>() {
+        return new StreamObserver<>() {
 
             @Override
             public void onNext(final SomeType input) {
